@@ -1,24 +1,34 @@
 #!/usr/local/bin/ruby -w
 
 def this_thing
-	final = Hash.new()
+	@final = Hash.new()
 
-	class_name = @attributes.keys[@attributes.length-1]
-	@attributes[class_name].each do |key, val|
-		final[key] = @attributes
+	#class_name = @attributes.keys[@attributes.length-1]
+	class_name = @attributes.last['name']
+	class_vals = @attributes.last['val']
+	puts class_name
+	#class_count = @attributes[class_name].size
+
+#	for i in (0..class_count) do
+#		this_class_name = @attributes[class_name][i]
+#		puts @attributes[class_name].key(i)
+#		#puts this_class_name
+#		puts i
+#	end
+
+	class_vals.each do |key, val|
+		@final[key] = @attributes
 	end
 
-	final.each do |key, val|
-		puts "#{key} => #{val}"
-		puts '-'*50
-	end
 end
 
 arff_file = File.open('data/adult.arff', 'r')
 relation_name = nil
-@attributes = Hash.new()
+@attributes = Array.new()
+@missing_values = Array.new()
+@types = Array.new
 
-i = 0
+j = 0
 while line = arff_file.gets.chomp!
 
 	if line[0] == '%' then 
@@ -52,11 +62,16 @@ while line = arff_file.gets.chomp!
 			end
 
 			attr_val = values
+			@types.push('cat')
 		else
+			puts attr_name
 			attr_val = 0
+			@types.push('num')
 		end
 
-		@attributes[attr_name] = attr_val
+		#@attributes[attr_name] = attr_val
+		val = Hash['name' => attr_name, 'val' => attr_val]
+		@attributes.push(val)
 
 	elsif line =~ /@DATA/ then
 
@@ -65,17 +80,37 @@ while line = arff_file.gets.chomp!
 		
 	elsif line != "" then
 
-		line = line.split(',')
+		# got data
+
+		# check to see if the line has an unknown value
+		if line.index('?') != nil then
+			@missing_values.push(line)
+			next
+		end
+
+		# entry has all values, lets process it
+		line = line.split(', ')
 		clas = line[line.length-1]
 
-		@attributes[clas] = line
+
+		for i in (0..line.size) do
+			# figure out the type and do the appropriate thing
+			puts @types[i]
+			if @types[i] == 'num' then
+				# avg the data
+				puts "Name:(#{i}) ",@final[clas][i]['name']
+				puts "Used to be: #{@final[clas][i]}"
+				@final[clas][i] = line[i]
+				puts "Now its: #{@final[clas][i]}"
+			end
+		end
 	end
 
 	# debug block
-	if i > 25 then
+	if j > 25 then
 		break
 	end
-	i += 1
+	j += 1
 end
 
 @attributes.each do |key, val|
@@ -83,3 +118,10 @@ end
 end
 
 
+	@final.each do |key, val|
+		puts "#{key} => #{val}"
+		puts '-'*50
+	end
+
+puts @types
+puts @attributes
