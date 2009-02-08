@@ -11,6 +11,12 @@ class Parser
 		@missing_values = Array.new()
 		@attributes = Array.new()
 		@max_lines = 1000
+
+		# delete any files laying around from a previous run
+		begin
+			File.delete('./data/missing_values')
+		rescue
+		end
 	end
 
 	# returns a hash of the classes
@@ -170,23 +176,119 @@ class Parser
 				end
 			end
 
-			# debug block
-			if j > @max_lines then break end
+			if j > @max_lines then 
+
+				# if we've read in the max number of lines we can
+				# store in memory, then write the missing_values
+				# array to a file, clear it, and keep reading
+				# (since we don't store the records in memory, only
+				# the averages)
+
+				write_missing_values()
+				@missing_values.clear()
+				#break 
+			end
 			j += 1
 		end
+
+		arff_file.close()
+	end
+
+	def write_missing_values ()
+		out = File.open('data/missing_values', 'a')
+
+		@missing_values.each do |entry|
+			out.puts entry
+		end
+
+		out.close()
+	end
+
+	def fill_in_missing_values ()
+
+		file = File.open('data/missing_values', 'r')
+
+		while line = file.gets
+
+			line.chomp!
+			# entry has all values, lets process it
+			line = line.split(', ')
+			clas = line[line.length-1]
+
+			for i in (0..line.size) do
+
+				# figure out the type and do the appropriate thing
+				if types[i] == 'num' then
+
+					# avg the data
+					
+
+					if line[i] == '?' then
+						#puts "Used to me: #{line[i]}"
+						avg = find_avg(i, clas)
+						line[i] = avg
+						#puts "Now its: #{line[i]}"
+					end
+
+					orig = @final[clas][i]['val']
+					new = (orig.to_i + line[i].to_i)/2
+					@final[clas][i]['val'] = new
+
+				elsif types[i] == 'cat' then
+
+					# inc val for given cat
+
+					if line[i] == '?' then
+						#puts "Used to me: #{line[i]}"
+						subclass_name = find_most_frequent(i, clas)
+						line[i] = subclass_name
+						#puts "Now its: #{line[i]}"
+					end
+
+					@final[clas][i]['val'][line[i]] += 1
+				end
+			end
+
+		end
+
+		file.close()
+	end
+
+
+	# find the most frequest cat for a given class and attribute
+	def find_most_frequent(i, clas)
+
+		highest = 0
+		name = nil
+		
+		@final[clas][i]['val'].each do |subclass_name, count|
+
+			if count > highest then
+				highest = count
+				name = subclass_name
+			end
+		end
+		return name
+	end
+
+	# find the avg for a given attribute for a given class
+	def find_avg(i, clas)
+
+		avg = @final[clas][i]['val']
+		return avg	
 	end
 
 	def setup_structure ()
 
 		puts "Classes: #{@classes}"
 		@classes.each do |_class|
-			@final[_class[0]] = structure_me()
-			puts "Class: #{_class[0]}"
-			puts '*'*50
+			@final[_class[0]] = _structure_me()
+			#puts "Class: #{_class[0]}"
+			#puts '*'*50
 		end
 	end
 
-	def structure_me ()
+	def _structure_me ()
 
 		arff_file = File.open('data/adult.arff', 'r')
 		tmp = Array.new()
@@ -236,23 +338,3 @@ class Parser
 		end
 	end
 end
-
-#p = Parser.new()
-#p.find_classes()
-#
-#puts p.classes()
-#
-## setup the structure to hold all the values
-#p.setup_structure()
-#
-#f = p.final
-#puts '5'*50
-#
-#p.read_file()
-#
-#f.each do |key, val|
-#	puts "#{key} => #{val}"
-#	puts '5'*50
-#end
-##puts f['>50K.']
-#puts p.missing_values.size
