@@ -1,7 +1,8 @@
 #!/usr/local/bin/ruby -w
 
 class Parser
-	attr_accessor :classes, :types, :final, :missing_values, :attributes
+	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines
+
 
 	def initialize ()
 		@final = Hash.new()
@@ -9,6 +10,7 @@ class Parser
 		@classes = Array.new()
 		@missing_values = Array.new()
 		@attributes = Array.new()
+		@max_lines = 1000
 	end
 
 	# returns a hash of the classes
@@ -169,7 +171,7 @@ class Parser
 			end
 
 			# debug block
-			if j > 28 then break end
+			if j > @max_lines then break end
 			j += 1
 		end
 	end
@@ -235,21 +237,22 @@ class Parser
 	end
 end
 
-p = Parser.new()
-p.find_classes()
-
-puts p.classes()
-
-# setup the structure to hold all the values
-p.setup_structure()
-
-f = p.final
-puts '5'*50
-
-p.read_file()
-
-f.each do |key, val|
-	puts "#{key} => #{val}"
-	puts '5'*50
-end
-#puts f['>50K.']
+#p = Parser.new()
+#p.find_classes()
+#
+#puts p.classes()
+#
+## setup the structure to hold all the values
+#p.setup_structure()
+#
+#f = p.final
+#puts '5'*50
+#
+#p.read_file()
+#
+#f.each do |key, val|
+#	puts "#{key} => #{val}"
+#	puts '5'*50
+#end
+##puts f['>50K.']
+#puts p.missing_values.size
