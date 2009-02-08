@@ -100,7 +100,7 @@ while line = arff_file.gets.chomp!
 				# avg the data
 				puts "Name:(#{i}) ",@final[clas][i]['name']
 				puts "Used to be: #{@final[clas][i]}"
-				@final[clas][i] = line[i]
+				@final[clas][i]['val'] = line[i]
 				puts "Now its: #{@final[clas][i]}"
 			end
 		end
