@@ -221,7 +221,7 @@ class Parser
 				if types[i] == 'num' then
 
 					# avg the data
-					
+
 
 					if line[i] == '?' then
 						#puts "Used to me: #{line[i]}"
@@ -260,7 +260,7 @@ class Parser
 
 		highest = 0
 		name = nil
-		
+
 		@final[clas][i]['val'].each do |subclass_name, count|
 
 			if count > highest then
