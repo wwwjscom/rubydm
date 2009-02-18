@@ -1,7 +1,7 @@
 #!/usr/local/bin/ruby -w
 
 class Parser
-	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines
+	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines, :known_values, :number_of_entries
 
 
 	def initialize ()
@@ -9,14 +9,45 @@ class Parser
 		@types = Array.new()
 		@classes = Array.new()
 		@missing_values = Array.new()
+		@known_values = Array.new() # holds the known entries (ie the line has no ?'s) which we'll write to a file @ max_lines
 		@attributes = Array.new()
 		@max_lines = 1000
+		@number_of_entries = 0
 
 		# delete any files laying around from a previous run
 		begin
 			File.delete('./data/missing_values')
+			File.delete('./data/all_data')
 		rescue
 		end
+	end
+
+	# This function will take 'all_data' file, which will
+	# contain values that were once missing but were since guessed,
+	# and read it in line by line, parsing out only the attribute
+	# we case about.  It'll create a frequency of attribute values
+	# and return a hash.  Must pass in the index (column) of the
+	# desired attribute
+	def read_attribute_values(attribute_index)
+
+		file = File.open('data/all_data', 'r')
+		@attr_frequency = Hash.new
+
+		while line = file.gets
+			line = line.chomp
+			line = line.split(', ')
+			line_attr_value = line[attribute_index].to_i
+
+			if @attr_frequency.has_key?(line_attr_value)
+				@attr_frequency[line_attr_value] += 1
+			else
+				@attr_frequency[line_attr_value] = 1
+			end
+		end
+
+		file.close
+
+		return @attr_frequency
 	end
 
 	# returns a hash of the classes
@@ -150,6 +181,10 @@ class Parser
 					next
 				end
 
+				# push the line onto our known values array so that
+				# we can write it to a file for use later.
+				@known_values.push(line)
+
 				# entry has all values, lets process it
 				line = line.split(', ')
 				clas = line[line.length-1]
@@ -184,6 +219,8 @@ class Parser
 				# (since we don't store the records in memory, only
 				# the averages)
 
+				write_values()
+				@known_values.clear
 				write_missing_values()
 				@missing_values.clear()
 				#break 
@@ -192,6 +229,20 @@ class Parser
 		end
 
 		arff_file.close()
+	end
+
+
+	def write_values()
+		out = File.open('data/all_data', 'a')
+
+		j = 0
+		@known_values.each do |entry|
+			out.puts entry
+			j += 1
+		end
+
+		out.close()
+		@number_of_entries += j
 	end
 
 	def write_missing_values ()
@@ -206,10 +257,15 @@ class Parser
 
 	def fill_in_missing_values ()
 
+		# clear out the known values array so we don't write any
+		# values twice by accident
+		@known_values.clear
+
 		file = File.open('data/missing_values', 'r')
 
 		while line = file.gets
 
+			orig_line = line
 			line.chomp!
 			# entry has all values, lets process it
 			line = line.split(', ')
@@ -247,9 +303,16 @@ class Parser
 
 					@final[clas][i]['val'][line[i]] += 1
 				end
+
 			end
 
+			# add the line with all the the newly filled in values
+			# to our known_values array, strip out some junk created
+			# above.
+			@known_values.push(line.to_s.tr('[]\"', ''))
 		end
+
+		write_values
 
 		file.close()
 	end

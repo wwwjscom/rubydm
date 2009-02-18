@@ -21,12 +21,17 @@ class Runner
 
 		@p.fill_in_missing_values()
 
+		out = File.open('data/final', 'w')
+		@p.final.each do |key, val|
+			puts
+		end
 
 		########################
 		# Start Discretization #
 		########################
 		e = Entropy.new(@p)
-		e.find_continous_attributes
+		sorted_frequency_hash = e.find_continous_attributes
+		e.discretize(sorted_frequency_hash)
 	
 	end
 
