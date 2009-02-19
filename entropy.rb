@@ -58,7 +58,7 @@ class Entropy
       # probability (frequency/# of events)
       ranges = split(frequency_hash)
       return_hash[@parser.attribute_name_index_list[attribute_name]] = ranges
-      puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
+      #puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
     end
 
     return return_hash
@@ -199,8 +199,8 @@ class Entropy
     probability = (frequency.to_f/@parser.number_of_entries.to_f)
     entropy = probability * -1 * Math.log(probability, 2)
     rescue
-      puts probability
-      puts frequency
+      #puts probability
+      #puts frequency
     end
     return entropy
   end

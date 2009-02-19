@@ -13,6 +13,9 @@ class Runner
 
 	def parse_file ()
 
+    puts '-'*25
+    puts '----------- PARSING --------------'
+    puts '-'*25
 		# figure out how many claases we have, and the names
 		@p.find_classes()
 
@@ -21,17 +24,23 @@ class Runner
 
 		@p.read_file()
 
+    puts '-'*25
+    puts '----------- MISSING VALS --------------'
+    puts '-'*25
 		@p.fill_in_missing_values()
 
-		out = File.open('data/final', 'w')
-		@p.final.each do |key, val|
-			puts
-		end
+#		out = File.open('data/final', 'w')
+#		@p.final.each do |key, val|
+#			pputs
+#		end
 
 
 		########################
 		# Start Discretization #
 		########################
+    puts '-'*25
+    puts '----------- ENTROPY --------------'
+    puts '-'*25
 		e = Entropy.new(@p)
 		sorted_frequency_hash = e.find_continous_attributes
 		ranges_hash = e.discretize(sorted_frequency_hash)
@@ -41,6 +50,9 @@ class Runner
 		########################
 		# Structure bays array #
 		########################
+    puts '-'*25
+    puts '----------- CALC PROBABILITIES --------------'
+    puts '-'*25
 		bayes = Bayes.new(@p, ranges_hash)
 		bayes.create_new_attributes_list
 		tmp = @p.structure_array_based_on_attributes(true)
@@ -49,6 +61,9 @@ class Runner
 		##################
 		# X-Fold it yo!! #
 		##################
+    puts '-'*25
+    puts '----------- X-FOLDING --------------'
+    puts '-'*25
 		xfold = Xfold.new(@p)
 		xfold.xfold(bayes)
 	end

@@ -12,10 +12,22 @@ require "tester.rb"
   # Run x-fold validation on that model
   def xfold(model_to_use)
 
-    x = 0 # DEBUG
+    accuracy = 0
+    micro_recall = 0
+    micro_precision = 0
+    micro_f = 0
+    macro_recall = 0
+    macro_precision = 0
+    macro_f = 0
+
+    #x = 0 # DEBUG
     ten_percent = @parser.number_of_entries * 0.10
 
     (1..10).each do |i|
+
+      puts '-'*25
+      puts "----------- X-FOLD - Test #{i} --------------"
+      puts '-'*25
 
      # test_a = Array.new
      # model_a = Array.new
@@ -49,12 +61,12 @@ require "tester.rb"
       # calculate frequencies
       model_to_use.calculate_frequencies
 
-      puts '-'*50
-      model_to_use.model.each do |key, val|
-        puts key
-        puts val
-        puts '-'*50
-      end
+      #puts '-'*50
+      #model_to_use.model.each do |key, val|
+      #  puts key
+      #  puts val
+      #  puts '-'*50
+      #end
 
 
       ################
@@ -132,20 +144,27 @@ require "tester.rb"
         #break # DEBUG break, remove ot check all attributes
       end
 
-      puts macro_tester.confusion_matrix_c1
-      puts '-'*5
-      puts macro_tester.confusion_matrix_c2
-      puts "Micro Recall: #{micro_tester.recall}"
-      puts "Micro Precision: #{micro_tester.precision}"
-      puts "Micro F-Measure: #{micro_tester.f_measure}"
-      puts "Accuracy: #{micro_tester.accuracy}"
+      puts '-'*10
+      puts "Accuracy: \t\t#{micro_tester.accuracy}"
+      puts '-'*10
+      puts "Micro Recall: \t\t#{micro_tester.recall}"
+      puts "Micro Precision: \t#{micro_tester.precision}"
+      puts "Micro F-Measure: \t#{micro_tester.f_measure}"
+      puts '-'*10
+      puts "Macro Recall: \t\t#{macro_tester.recall_macro}"
+      puts "Macro Precision: \t#{macro_tester.precision_macro}"
+      puts "Macro F-Measure: \t#{macro_tester.f_measure_macro}"
+      puts '-'*10
 
 
-      puts "Macro Recall: #{macro_tester.recall_macro}"
-      puts "Macro Precision: #{macro_tester.precision_macro}"
-      puts "Macro F-Measure: #{macro_tester.f_measure_macro}"
-
-
+      # Track averages
+      accuracy += micro_tester.accuracy
+      micro_recall += micro_tester.recall
+      micro_precision += micro_tester.precision
+      micro_f += micro_tester.f_measure
+      macro_recall += macro_tester.recall_macro
+      macro_precision += macro_tester.precision_macro
+      macro_f += macro_tester.f_measure_macro
 
 #      puts '-'*50
 #      model_to_use.test.each do |key, val|
@@ -154,9 +173,30 @@ require "tester.rb"
 #        puts '-'*50
 #      end
 
-      x += 1
-      if x == 1 then break end # DEBUG
+      #x += 1
+      #if x == 1 then break end # DEBUG
       #break # DEBUG remove me to make xfold run for all 10 runs
     end
+
+
+      puts '-'*25
+      puts "----------- X-FOLD - AVERAVES --------------"
+      puts '-'*25
+
+    puts '-'*10
+    puts "Accuracy: \t\t#{accuracy/10}"
+    puts '-'*10
+    puts "Micro Recall: \t\t#{micro_recall/10}"
+    puts "Micro Precision: \t#{micro_precision/10}"
+    puts "Micro F-Measure: \t#{micro_f/10}"
+    puts '-'*10
+    puts "Macro Recall: \t\t#{macro_recall/10}"
+    puts "Macro Precision: \t#{macro_precision/10}"
+    puts "Macro F-Measure: \t#{macro_f/10}"
+    puts '-'*10
+
+
+
+
   end
 end

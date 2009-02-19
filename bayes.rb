@@ -47,7 +47,7 @@ class Bayes
         else
           # we have a normal value here, increment it
           attr_name['val'] += 1
-          puts attr_name['val']
+          #puts attr_name['val']
         end
       end
     end
@@ -82,7 +82,7 @@ class Bayes
         else
           # we have a normal value here, increment it
           attr_name['val'] += 1
-          puts attr_name['val']
+          #puts attr_name['val']
         end
       end
     end
@@ -117,7 +117,7 @@ class Bayes
         attr_name['val'].each do |_attr_name, _attr_val|
           j = 0
           #attr_name['val'][_line] += 1
-          puts "#{_class}, #{attr_name['name']}, #{_attr_name}, #{_attr_val}"
+          #puts "#{_class}, #{attr_name['name']}, #{_attr_name}, #{_attr_val}"
           __attr_name = attr_name['name']
           #__attr_name = @model[_class].fetch(attr_name['name'])
           __sub_attr_name = _attr_name
@@ -128,16 +128,16 @@ class Bayes
           @parser.classes.keys.each do |__class|
             attr_total += @model[__class][i]['val'][__sub_attr_name]
           end
-          puts "Attr total: #{attr_total}"
+          #puts "Attr total: #{attr_total}"
           # loop and figure out the class count for the attribute,
           # then replace its value with the probability
           @parser.classes.keys.each do |__class|
             count = @model[__class][i]['val'][__sub_attr_name]
-            puts "Class: #{__class}"
-            puts "Count: #{count}"
+            #puts "Class: #{__class}"
+            #puts "Count: #{count}"
             probability = count.to_f/attr_total.to_f
             @model[__class][i]['val'][__sub_attr_name] = probability
-            puts "Probability: #{probability}"
+            #puts "Probability: #{probability}"
           end
 
           j += 1
@@ -183,7 +183,7 @@ class Bayes
       else
         # we have a normal value here, increment it
         attr_name['val'] += 1
-        puts attr_name['val']
+        #puts attr_name['val']
       end
     end
   end
