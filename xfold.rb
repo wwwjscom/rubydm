@@ -6,7 +6,7 @@ class Xfold
 
   def xfold(model)
 
-    ten_percent = @parser.max_lines * 0.10
+    ten_percent = @parser.number_of_entries * 0.10
 
     (1..10).each do |i|
 

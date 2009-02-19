@@ -6,11 +6,11 @@ class Parser
 
 	def initialize ()
 		@final = Hash.new()
-		@types = Array.new()
-		@classes = Array.new()
-		@missing_values = Array.new()
+		@types = Array.new() # holds whether an attribute is a cat or numeric value
+		@classes = Array.new() # the classes of the file we are reading in...supposed to be the last column
+		@missing_values = Array.new() # holds all missing entries, anything with a ? in it
 		@known_values = Array.new() # holds the known entries (ie the line has no ?'s) which we'll write to a file @ max_lines
-		@attributes = Array.new()
+		@attributes = Array.new() # holds a list of attribute names
 		@max_lines = 1000
 		@number_of_entries = 0
 
