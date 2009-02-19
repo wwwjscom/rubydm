@@ -31,7 +31,8 @@ class Runner
 		########################
 		e = Entropy.new(@p)
 		sorted_frequency_hash = e.find_continous_attributes
-		e.discretize(sorted_frequency_hash)
+		ranges_hash = e.discretize(sorted_frequency_hash)
+		@p.replace_continous_attributes_with_categories(ranges_hash)
 	
 	end
 

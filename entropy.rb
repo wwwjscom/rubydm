@@ -1,8 +1,10 @@
 class Entropy
 
+  attr_accessor :attribute_name_index_list
 
   def initialize(parser)
     @parser = parser
+    @attribute_name_index_list = Hash.new
   end
 
   # find out which one of our attributes are continuous.  Once
@@ -20,6 +22,8 @@ class Entropy
 
         # get the attribute name
         attribute_name = attributes_array.fetch(attr_index)['name']
+
+        @attribute_name_index_list[attribute_name] = attr_index
 
         puts '-'*200
         puts attribute_name + '' + attr_index.to_s
@@ -49,6 +53,7 @@ class Entropy
   # attribute.
   def discretize sorted_frequency
 
+    return_hash = Hash.new
     # iterate over each attribtue and open up its attribute
     # name and its frequency
     sorted_frequency.each do |attribute_name, frequency_hash|
@@ -56,8 +61,11 @@ class Entropy
       # probability (frequency/# of events)
       #find_best_split_point(frequency_hash)
       ranges = split(frequency_hash)
+      return_hash[@attribute_name_index_list[attribute_name]] = ranges
       puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
     end
+
+    return return_hash
   end
 
 
@@ -150,7 +158,6 @@ class Entropy
           if @max_entropy == true then 
 #            puts "Entry is too high, giving back :#{stack.join(',')}"
             return stack.join(',')
-            break
           end
           #puts range #DEBUG
 
@@ -172,7 +179,8 @@ class Entropy
           if(e_1 > 0.5 or e_2 > 0.5)
             # stop, entropy of range is too high
             @max_entropy = true
-            @new_e = "#{range_low}-#{range_high}"
+            return stack.join(',')
+            #@new_e = "#{range_low}-#{range_high}"
             break
           else
             # Replace the previous range, e[j], to the new 2

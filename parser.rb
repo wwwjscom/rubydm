@@ -18,6 +18,7 @@ class Parser
 		begin
 			File.delete('./data/missing_values')
 			File.delete('./data/all_data')
+			File.delete('./data/descrete')
 		rescue
 		end
 	end
@@ -48,6 +49,46 @@ class Parser
 		file.close
 
 		return @attr_frequency
+	end
+
+	# Scans the file line by line, attribute by attribute, looking for
+	# any attributes which exist within the ranges_hash['attr_column_index'].
+	# If it finds one, then it replaces its value with the range that
+	# it falls into, it 4 would be replaced with 1-10
+	def replace_continous_attributes_with_categories(ranges_hash)
+
+		in_file = File.open('data/all_data', 'r')
+		out_file = File.open('data/descrete', 'w')
+
+		# loop over the lines of the file
+		while line = in_file.gets
+			line = line.chomp
+			line = line.split(', ')
+
+			# Go through the ranges hash and replace each lines index value
+			# with the range that it belongs to
+			ranges_hash.each do |attr_index, ranges|
+
+				attr_index = attr_index.to_i
+				split_ranges = ranges.split(',')
+				attr_value = line[attr_index].to_i
+				split_ranges.each do |range|
+					range = range.split('-')
+					# if the value falls within our range
+					#puts "Is #{range[0].to_i} <= #{attr_value} or #{attr_value} <= #{range[1].to_i}" # DEBUG output
+					if range[0].to_i <= attr_value and attr_value <= range[1].to_i then
+						#puts "YES!" # DEBUG output
+						line[attr_index] = range.join('-')
+						break
+					end
+				end
+			end
+
+			out_file.puts line.join(', ')
+		end
+
+		in_file.close
+		out_file.close
 	end
 
 	# returns a hash of the classes
