@@ -19,6 +19,7 @@ class Parser
 			File.delete('./data/missing_values')
 			File.delete('./data/all_data')
 			File.delete('./data/descrete')
+			File.delete('./data/new_attr_list')
 		rescue
 		end
 	end
@@ -386,18 +387,31 @@ class Parser
 
 		puts "Classes: #{@classes}"
 		@classes.each do |_class|
-			@final[_class[0]] = _structure_me()
+			@final[_class[0]] = structure_array_based_on_attributes()
 			#puts "Class: #{_class[0]}"
 			#puts '*'*50
 		end
 	end
 
-	def _structure_me ()
+  # Structure an array based on the attributes
+  # which are given in the .arff file and returns
+  # that array so that it can be populated
+  #
+  # use_new_attr_file says whether we should read
+  # in the file which contains ranges instead of
+  # continous #'s as attributes.
+	def structure_array_based_on_attributes (use_new_attr_file = false)
 
-		arff_file = File.open('data/adult.arff', 'r')
+    if use_new_attr_file then
+      arff_file = File.open('data/new_attr_list', 'r')
+    else
+      arff_file = File.open('data/adult.arff', 'r')
+    end
 		tmp = Array.new()
 
-		while line = arff_file.gets.chomp!
+		while line = arff_file.gets
+
+      line = line.chomp
 
 			if line[0] == '%' then 
 
@@ -441,4 +455,5 @@ class Parser
 			end
 		end
 	end
+
 end

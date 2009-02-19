@@ -3,6 +3,7 @@
 require "parser.rb"
 require "entropy.rb"
 require "xfold.rb"
+require "bayes.rb"
 
 class Runner
 
@@ -27,6 +28,7 @@ class Runner
 			puts
 		end
 
+
 		########################
 		# Start Discretization #
 		########################
@@ -35,10 +37,22 @@ class Runner
 		ranges_hash = e.discretize(sorted_frequency_hash)
 		@p.replace_continous_attributes_with_categories(ranges_hash)
 
-		xfold = Xfold.new(@p)
 
-		xfold.xfold("model")
+		########################
+		# Structure bays array #
+		########################
+		bayes = Bayes.new(@p, ranges_hash)
+		bayes.create_new_attributes_list
+		tmp = @p.structure_array_based_on_attributes(true)
+
+
+		##################
+		# X-Fold it yo!! #
+		##################
+		xfold = Xfold.new(@p)
+		xfold.xfold(bayes)
 	
+
 	end
 
 	def debug ()
