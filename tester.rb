@@ -39,16 +39,15 @@ class Tester
   end
 
   def evaluate(predicted_class, actual_class)
-#    puts "Class 0: #{@classes.to_a[0][0]}"
-#    puts "Class: #{@classes}"
-#    puts "predicted_class: #{predicted_class}"
-    if predicted_class == @classes.to_a[0][0] then
+#    if predicted_class == @classes.to_a[0][0] then
       if predicted_class == actual_class then @tp += 1 end
       if predicted_class != actual_class then @fn += 1 end
-    else
-      if predicted_class == actual_class then @fp += 1 end
-      if predicted_class != actual_class then @tn += 1 end
-    end
+#    else
+#      if predicted_class == actual_class then @fp += 1 end
+#      if predicted_class != actual_class then @tn += 1 end
+#    end
+    @fp = @fn
+    @tn = @tp
   end
 
   def accuracy
