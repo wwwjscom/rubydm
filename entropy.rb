@@ -3,6 +3,7 @@ class Entropy
 
   def initialize(parser)
     @parser = parser
+    @max_entropy = false
   end
 
   # find out which one of our attributes are continuous.  Once
@@ -54,7 +55,8 @@ class Entropy
     sorted_frequency.each do |attribute_name, frequency_hash|
       # for each of the values in the hash/array, find their
       # probability (frequency/# of events)
-      find_best_split_point(frequency_hash)
+      #find_best_split_point(frequency_hash)
+      split(frequency_hash)
     end
   end
 
@@ -63,7 +65,57 @@ class Entropy
   # to find the best split points based on the entropy
   # of the ranges at the given split point. Returns the
   # best ranges in an array
-  def find_best_split_point(frequency_hash)
+  def find_best_split_point(min, max, frequency_hash)
+
+
+  # setup base-case values
+
+  split_point = (min.to_i + max.to_i)/2
+  range_1 = "#{min}-#{split_point-1}"
+  range_2 = "#{split_point}-#{max}"
+
+  range_1_hash, range_2_hash = Hash.new, Hash.new
+
+
+    # setup the range hashes.  We will use these to iterate
+    # over and calculate the entropy of the range.
+    frequency_hash.each do |attribute_label, frequency|
+      if attribute_label.to_i < (split_point-1).to_i then
+        range_1_hash[attribute_label] = frequency
+      elsif attribute_label.to_i >= split_point.to_i then
+        range_2_hash[attribute_label] = frequency
+      end
+    end
+
+    range_1_frequency = sum_frequency_for_range(range_1_hash)
+    range_2_frequency = sum_frequency_for_range(range_2_hash)
+
+#    range_1_entropy = calc_entropy(range_1_frequency)
+#    range_2_entropy = calc_entropy(range_2_frequency)
+#
+#    puts range_1_entropy
+#    puts range_2_entropy
+
+#    min_val = frequency_hash.min[0]
+#    max_val = frequency_hash.max[0]
+#    split_point = (min_val + max_val)/2
+#    range_1 = "#{min_val}-#{split_point-1}"
+#    range_2 = "#{split_point}-#{max_val}"
+#
+#    times += 1
+
+  # debug block
+  puts min
+  puts max
+  puts split_point
+  puts range_1
+  puts range_2
+
+  return [range_1, range_2]
+  end
+
+
+  def split(frequency_hash)
 
     # setup base-case values
     min_val = frequency_hash.min[0]
@@ -77,60 +129,68 @@ class Entropy
 
     stack = Array.new
 
+    stack.push(range_1)
+    stack.push(range_2)
     ###################### WORKING ON BASE CASE #########################
 
     range_1_entropy, range_2_entropy = 0, 0
-    while (range_2_entropy < 0.5 and range_1_entropy < 0.5) and times < 5  do
+    while @max_entropy == false and times < 4  do
+      new_stack = Array.new
+      puts "Stack @ TOP: #{stack}"
+      i = 0
+      stack.each do |entry|
+        puts "Entry: #{entry}"
+        @e = entry.split(',')
+        @new_e = ''
 
+        j = 0
+        @e.each do |range|
+          #puts range #DEBUG
 
-      range_1_hash, range_2_hash = Hash.new, Hash.new
-      stack.push([range_1, range_2])
+          puts "e: #{@e}"
+          ranges = range.split('-')
+          range_low = ranges[0]
+          range_high = ranges[1]
 
-      # setup the range hashes.  We will use these to iterate
-      # over and calculate the entropy of the range.
-      frequency_hash.each do |attribute_label, frequency|
-        if attribute_label.to_i < (split_point-1).to_i then
-          range_1_hash[attribute_label] = frequency
-        elsif attribute_label.to_i >= split_point.to_i then
-          range_2_hash[attribute_label] = frequency
+          new_ranges = find_best_split_point(range_low, range_high, frequency_hash)
+
+          e_1 = calc_entropy(new_ranges[0])
+          e_2 = calc_entropy(new_ranges[1])
+
+          if(e_1 > 0.5 or e_2 > 0.5)
+            # stop, entropy of range is too high
+            @max_entropy = true
+            break
+          else
+            # Replace the previous range, e[j], to the new 2
+            # ranges we just calcualted
+            #@e.delete_at(j)
+            if j == 0 then
+              prefix = ''
+            else
+              prefix = ','
+            end
+
+            #@e.insert(j, "#{prefix}#{new_ranges[0]},#{new_ranges[1]}")
+            @new_e += "#{prefix}#{new_ranges[0]},#{new_ranges[1]}"
+            j += 1
+          end
+          puts "Stack: #{stack}"
+          puts "New Stack: #{new_stack}"
+          #stack[i] = @e.to_s.tr(' []\"', '')
+          #new_stack[i] = @e.to_s.tr(' []\"', '')
+          new_stack[i] = @new_e.to_s.tr(' []\"', '')
+          puts "Stack: #{stack}"
+          puts "New Stack: #{new_stack}"
         end
+        i += 1
+        times += 1
       end
-
-      range_1_frequency = sum_frequency_for_range(range_1_hash)
-      range_2_frequency = sum_frequency_for_range(range_2_hash)
-
-      range_1_entropy = calc_entropy("balls", range_1_frequency)[1]
-      range_2_entropy = calc_entropy("balls", range_2_frequency)[1]
-
-      puts range_1_entropy
-      puts range_2_entropy
-
-
-      # find the next split points which we will
-      # use (if needed)
-      prev_range_1 = stack[i][0]
-      prev_range_2 = stack[i][1]
-
-      min_val = frequency_hash.min[0]
-      max_val = frequency_hash.max[0]
-      split_point = (min_val + max_val)/2
-      range_1 = "#{min_val}-#{split_point-1}"
-      range_2 = "#{split_point}-#{max_val}"
-
-      times += 1
+      puts "BOTTOM"*50
+      stack = new_stack
     end
 
-    # debug block
-    puts min_val
-    puts max_val
-    puts split_point
-    puts range_1
-    puts range_2
-    return
-  end
-
-
-  def split(frequency_hash, range)
+    puts "Recomended ranges for this attribute are #{stack.join(',')}"
 
   end
 
@@ -149,9 +209,10 @@ class Entropy
   # Takes in an attribute label (ie, 65 is the attribute
   # label for age) and a frequency count (10 people have
   # age 65) and returns the entropy.
-  def calc_entropy(attribute_label, frequency)
+  def calc_entropy(frequency)
     probability = (frequency.to_f/@parser.number_of_entries.to_f)
+    puts probability #DEBUG
     entropy = probability * -1 * Math.log(probability, 2)
-    return [attribute_label, entropy]
+    return entropy
   end
 end
