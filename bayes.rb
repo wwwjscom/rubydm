@@ -170,10 +170,10 @@ class Bayes
           #puts "Checking to see if #{attr_name['name']} matches #{attribute}"
           if attr_name['name'] == attribute then
             if sub_attribute == nil then
-              puts "Value of #{attribute} for class #{_class} is #{attr_name['val']}"
+              #puts "Value of #{attribute} for class #{_class} is #{attr_name['val']}"
               return attr_name['val']
             else
-              puts "Value of #{attribute}'s subattribute #{sub_attribute} for class #{_class} is #{attr_name['val'][sub_attribute]}"
+              #puts "Value of #{attribute}'s subattribute #{sub_attribute} for class #{_class} is #{attr_name['val'][sub_attribute]}"
               return attr_name['val'][sub_attribute]
             end
           end
