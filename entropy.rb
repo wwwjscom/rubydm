@@ -59,7 +59,6 @@ class Entropy
     sorted_frequency.each do |attribute_name, frequency_hash|
       # for each of the values in the hash/array, find their
       # probability (frequency/# of events)
-      #find_best_split_point(frequency_hash)
       ranges = split(frequency_hash)
       return_hash[@attribute_name_index_list[attribute_name]] = ranges
       puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
@@ -69,24 +68,19 @@ class Entropy
   end
 
 
-  # Looks through the passed in frequency_hash and tries
-  # to find the best split points based on the entropy
-  # of the ranges at the given split point. Returns the
-  # best ranges in an array
+  # Takes in a range, and splits it into two new sub ranges.
+  # Returns the new ranges along with their frequencies
   def find_best_split_point(min, max, frequency_hash)
 
+    split_point = (min.to_i + max.to_i)/2
+    range_1 = "#{min}-#{split_point-1}"
+    range_2 = "#{split_point}-#{max}"
 
-  # setup base-case values
-
-  split_point = (min.to_i + max.to_i)/2
-  range_1 = "#{min}-#{split_point-1}"
-  range_2 = "#{split_point}-#{max}"
-
-  range_1_hash, range_2_hash = Hash.new, Hash.new
+    range_1_hash, range_2_hash = Hash.new, Hash.new
 
 
-    # setup the range hashes.  We will use these to iterate
-    # over and calculate the entropy of the range.
+    # take our original range, and split it into two new ones
+    # based on our split poined calculated above
     frequency_hash.each do |attribute_label, frequency|
       if attribute_label.to_i < (split_point-1).to_i then
         range_1_hash[attribute_label] = frequency
@@ -98,36 +92,16 @@ class Entropy
     range_1_frequency = sum_frequency_for_range(range_1_hash)
     range_2_frequency = sum_frequency_for_range(range_2_hash)
 
-#    range_1_entropy = calc_entropy(range_1_frequency)
-#    range_2_entropy = calc_entropy(range_2_frequency)
-#
-#    puts range_1_entropy
-#    puts range_2_entropy
-
-#    min_val = frequency_hash.min[0]
-#    max_val = frequency_hash.max[0]
-#    split_point = (min_val + max_val)/2
-#    range_1 = "#{min_val}-#{split_point-1}"
-#    range_2 = "#{split_point}-#{max_val}"
-#
-#    times += 1
-
-  # debug block
-#  puts min
-#  puts max
-#  puts split_point
-#  puts range_1
-#  puts range_2
-
-  #return [range_1, range_2]
-  return [range_1, range_1_frequency, range_2, range_2_frequency]
+    return [range_1, range_1_frequency, range_2, range_2_frequency]
   end
 
 
+  # Takes in a frequency hash which contains...stuff?  Can't remember
+  # what it should contain right now...
   def split(frequency_hash)
 
-    @max_entropy = false
     # setup base-case values
+    @max_entropy = false
     min_val = frequency_hash.min[0]
     max_val = frequency_hash.max[0]
 
@@ -141,73 +115,67 @@ class Entropy
 
     stack.push(range_1)
     stack.push(range_2)
-    ###################### WORKING ON BASE CASE #########################
 
     range_1_entropy, range_2_entropy = 0, 0
+
+    # base-case is done, lets drop into the recursive
+    # loop
+    
     while @max_entropy == false and times < 4  do
-      new_stack = Array.new
-#      puts "Stack @ TOP: #{stack}"
+      new_stack = Array.new # temp stack
       i = 0
       stack.each do |entry|
-#        puts "Entry: #{entry}"
+
+        # ranges are curretnyl in form 1-10,11-20, etc
+        # so split them by comma and then deal with each
+        # range on its own
         @e = entry.split(',')
         @new_e = ''
 
         j = 0
         @e.each do |range|
+          # pretty sure this is deprecated
           if @max_entropy == true then 
-#            puts "Entry is too high, giving back :#{stack.join(',')}"
             return stack.join(',')
           end
-          #puts range #DEBUG
 
-#          puts "e: #{@e}"
+          # split apart the range which is in the form
+          # 1-10 so we can pass this in as min and max
+          # values when looking for split points
           ranges = range.split('-')
           range_low = ranges[0]
           range_high = ranges[1]
 
+          # find new ranges, and their frequencies
           new_ranges = find_best_split_point(range_low, range_high, frequency_hash)
 
-#          puts "New range 0: #{new_ranges[0]}"
-#          puts "New range 1: #{new_ranges[2]}"
+          # use the frequencies of the new ranges to
+          # find the entropy of the new ranges
           e_1 = calc_entropy(new_ranges[1])
           e_2 = calc_entropy(new_ranges[3])
-
-#          puts "Entropy 1: #{e_1}"
-#          puts "Entropy 2: #{e_2}"
 
           if(e_1 > 0.5 or e_2 > 0.5)
             # stop, entropy of range is too high
             @max_entropy = true
             return stack.join(',')
-            #@new_e = "#{range_low}-#{range_high}"
-            break
           else
-            # Replace the previous range, e[j], to the new 2
-            # ranges we just calcualted
-            #@e.delete_at(j)
+            # replace the previous ranges with the
+            # new ranges we just calculated
             if j == 0 then
               prefix = ''
             else
               prefix = ','
             end
-
-            #@e.insert(j, "#{prefix}#{new_ranges[0]},#{new_ranges[1]}")
             @new_e += "#{prefix}#{new_ranges[0]},#{new_ranges[2]}"
             j += 1
           end
-#          puts "Stack: #{stack}"
-#          puts "New Stack: #{new_stack}"
-#          #stack[i] = @e.to_s.tr(' []\"', '')
-#          #new_stack[i] = @e.to_s.tr(' []\"', '')
+          # push the new ranges to the stack
           new_stack[i] = @new_e.to_s.tr(' []\"', '')
-#          puts "Stack: #{stack}"
-#          puts "New Stack: #{new_stack}"
         end
         i += 1
         times += 1
       end
-#      puts "BOTTOM"*50
+      # set the tmp stack to the final stack
       stack = new_stack
     end
 
@@ -227,8 +195,7 @@ class Entropy
 
 
 
-  # Takes in an attribute label (ie, 65 is the attribute
-  # label for age) and a frequency count (10 people have
+  # Takes in a frequency count (10 people [the freq] have
   # age 65) and returns the entropy.
   def calc_entropy(frequency)
     begin

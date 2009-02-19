@@ -2,6 +2,7 @@
 
 require "parser.rb"
 require "entropy.rb"
+require "xfold.rb"
 
 class Runner
 
@@ -33,6 +34,10 @@ class Runner
 		sorted_frequency_hash = e.find_continous_attributes
 		ranges_hash = e.discretize(sorted_frequency_hash)
 		@p.replace_continous_attributes_with_categories(ranges_hash)
+
+		xfold = Xfold.new(@p)
+
+		xfold.xfold("model")
 	
 	end
 
