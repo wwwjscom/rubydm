@@ -93,12 +93,7 @@ class Xfold
 
             # get the probability for this specific class in our model
             attr_probability = model_to_use.get_attribute_value(_class, attr_name, line_attr_value)
-#            puts "attr_probability #{attr_probability}"
-#            orig_probability = probability[_class]
-#            puts "orig_probability #{orig_probability}"
-#            if orig_probability == nil then orig_probability = 0 end
-#            tmp = attr_probability * orig_probability
-#            probability[_class] = tmp
+
             begin
               probability[_class] *= attr_probability
             rescue
@@ -110,10 +105,20 @@ class Xfold
           index += 1
         end
 
+        max = 0
+        predicted_class = nil
+        probability.each do |__class, probability|
+          if probability > max then
+            predicted_class = __class
+            max = probability
+          end
+        end
+
+        puts "Predicted class: #{predicted_class} with probability #{max}"
+        puts "...and the correct class was....#{line[line.size-1]}"
         break # DEBUG break, remove ot check all attributes
       end
 
-      puts probability
       puts '-'*50
       model_to_use.test.each do |key, val|
         puts key
