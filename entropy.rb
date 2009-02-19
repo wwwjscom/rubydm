@@ -22,9 +22,9 @@ class Entropy
 
         @parser.attribute_name_index_list[attribute_name] = attr_index
 
-        puts '-'*100
-        puts attribute_name + '' + attr_index.to_s
-        puts '-'*100
+        #puts '-'*100
+        #puts attribute_name + '' + attr_index.to_s
+        #puts '-'*100
 
         # find the frequency of each occurance within this attribute
         frequency_hash = @parser.read_attribute_values(attr_index)

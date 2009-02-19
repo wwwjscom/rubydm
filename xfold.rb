@@ -155,7 +155,7 @@ require "tester.rb"
 #      end
 
       x += 1
-      if x == 2 then break end # DEBUG
+      if x == 1 then break end # DEBUG
       #break # DEBUG remove me to make xfold run for all 10 runs
     end
   end

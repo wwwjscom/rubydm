@@ -59,9 +59,9 @@ class Tester
   end
 
   def precision_macro
-    precision_c1 = ((@confusion_matrix_c1['TP'].to_f)/(@confusion_matrix_c1['TP'].to_f + @confusion_matrix_c1['FP'].to_f))
-    precision_c2 = ((@confusion_matrix_c2['TP'].to_f)/(@confusion_matrix_c2['TP'].to_f + @confusion_matrix_c2['FP'].to_f))
-    return ((precision_c1 + precision_c2)/@classes.size)
+    tp = (@confusion_matrix_c1['TP'].to_f + @confusion_matrix_c2['TP'].to_f)/2
+    fp = (@confusion_matrix_c1['FP'].to_f + @confusion_matrix_c2['FP'].to_f)/2
+    return ((tp)/(tp + fp))
   end
 
   def recall
@@ -69,9 +69,9 @@ class Tester
   end
 
   def recall_macro
-    recall_c1 = ((@confusion_matrix_c1['TP'].to_f)/(@confusion_matrix_c1['TP'].to_f + @confusion_matrix_c1['FN'].to_f))
-    recall_c2 = ((@confusion_matrix_c2['TP'].to_f)/(@confusion_matrix_c2['TP'].to_f + @confusion_matrix_c2['FN'].to_f))
-    return ((recall_c1 + recall_c2)/@classes.size)
+    tp = (@confusion_matrix_c1['TP'].to_f + @confusion_matrix_c2['TP'].to_f)/2
+    fn = (@confusion_matrix_c1['FN'].to_f + @confusion_matrix_c2['FN'].to_f)/2
+    return ((tp)/(tp + fn))
   end
 
   def f_measure
