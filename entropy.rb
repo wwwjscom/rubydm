@@ -3,7 +3,6 @@ class Entropy
 
   def initialize(parser)
     @parser = parser
-    @max_entropy = false
   end
 
   # find out which one of our attributes are continuous.  Once
@@ -35,7 +34,7 @@ class Entropy
         # to our hash so we can return it later
         continous_attributes_hash[attribute_name] = sorted_frequency
       end 
-      return continous_attributes_hash # DEBUG RETURN, take this one out!!
+      #return continous_attributes_hash # DEBUG RETURN, take this one out!!
       attr_index += 1
     end 
 
@@ -56,7 +55,8 @@ class Entropy
       # for each of the values in the hash/array, find their
       # probability (frequency/# of events)
       #find_best_split_point(frequency_hash)
-      split(frequency_hash)
+      ranges = split(frequency_hash)
+      puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
     end
   end
 
@@ -105,18 +105,20 @@ class Entropy
 #    times += 1
 
   # debug block
-  puts min
-  puts max
-  puts split_point
-  puts range_1
-  puts range_2
+#  puts min
+#  puts max
+#  puts split_point
+#  puts range_1
+#  puts range_2
 
-  return [range_1, range_2]
+  #return [range_1, range_2]
+  return [range_1, range_1_frequency, range_2, range_2_frequency]
   end
 
 
   def split(frequency_hash)
 
+    @max_entropy = false
     # setup base-case values
     min_val = frequency_hash.min[0]
     max_val = frequency_hash.max[0]
@@ -136,30 +138,41 @@ class Entropy
     range_1_entropy, range_2_entropy = 0, 0
     while @max_entropy == false and times < 4  do
       new_stack = Array.new
-      puts "Stack @ TOP: #{stack}"
+#      puts "Stack @ TOP: #{stack}"
       i = 0
       stack.each do |entry|
-        puts "Entry: #{entry}"
+#        puts "Entry: #{entry}"
         @e = entry.split(',')
         @new_e = ''
 
         j = 0
         @e.each do |range|
+          if @max_entropy == true then 
+#            puts "Entry is too high, giving back :#{stack.join(',')}"
+            return stack.join(',')
+            break
+          end
           #puts range #DEBUG
 
-          puts "e: #{@e}"
+#          puts "e: #{@e}"
           ranges = range.split('-')
           range_low = ranges[0]
           range_high = ranges[1]
 
           new_ranges = find_best_split_point(range_low, range_high, frequency_hash)
 
-          e_1 = calc_entropy(new_ranges[0])
-          e_2 = calc_entropy(new_ranges[1])
+#          puts "New range 0: #{new_ranges[0]}"
+#          puts "New range 1: #{new_ranges[2]}"
+          e_1 = calc_entropy(new_ranges[1])
+          e_2 = calc_entropy(new_ranges[3])
+
+#          puts "Entropy 1: #{e_1}"
+#          puts "Entropy 2: #{e_2}"
 
           if(e_1 > 0.5 or e_2 > 0.5)
             # stop, entropy of range is too high
             @max_entropy = true
+            @new_e = "#{range_low}-#{range_high}"
             break
           else
             # Replace the previous range, e[j], to the new 2
@@ -172,25 +185,25 @@ class Entropy
             end
 
             #@e.insert(j, "#{prefix}#{new_ranges[0]},#{new_ranges[1]}")
-            @new_e += "#{prefix}#{new_ranges[0]},#{new_ranges[1]}"
+            @new_e += "#{prefix}#{new_ranges[0]},#{new_ranges[2]}"
             j += 1
           end
-          puts "Stack: #{stack}"
-          puts "New Stack: #{new_stack}"
-          #stack[i] = @e.to_s.tr(' []\"', '')
-          #new_stack[i] = @e.to_s.tr(' []\"', '')
+#          puts "Stack: #{stack}"
+#          puts "New Stack: #{new_stack}"
+#          #stack[i] = @e.to_s.tr(' []\"', '')
+#          #new_stack[i] = @e.to_s.tr(' []\"', '')
           new_stack[i] = @new_e.to_s.tr(' []\"', '')
-          puts "Stack: #{stack}"
-          puts "New Stack: #{new_stack}"
+#          puts "Stack: #{stack}"
+#          puts "New Stack: #{new_stack}"
         end
         i += 1
         times += 1
       end
-      puts "BOTTOM"*50
+#      puts "BOTTOM"*50
       stack = new_stack
     end
 
-    puts "Recomended ranges for this attribute are #{stack.join(',')}"
+    return stack.join(',')
 
   end
 
@@ -210,9 +223,13 @@ class Entropy
   # label for age) and a frequency count (10 people have
   # age 65) and returns the entropy.
   def calc_entropy(frequency)
+    begin
     probability = (frequency.to_f/@parser.number_of_entries.to_f)
-    puts probability #DEBUG
     entropy = probability * -1 * Math.log(probability, 2)
+    rescue
+      puts probability
+      puts frequency
+    end
     return entropy
   end
 end
