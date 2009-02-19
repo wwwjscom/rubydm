@@ -51,8 +51,6 @@ class Runner
 		##################
 		xfold = Xfold.new(@p)
 		xfold.xfold(bayes)
-	
-
 	end
 
 	def debug ()

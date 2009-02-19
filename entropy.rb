@@ -1,10 +1,7 @@
 class Entropy
 
-  attr_accessor :attribute_name_index_list
-
   def initialize(parser)
     @parser = parser
-    @attribute_name_index_list = Hash.new
   end
 
   # find out which one of our attributes are continuous.  Once
@@ -23,11 +20,11 @@ class Entropy
         # get the attribute name
         attribute_name = attributes_array.fetch(attr_index)['name']
 
-        @attribute_name_index_list[attribute_name] = attr_index
+        @parser.attribute_name_index_list[attribute_name] = attr_index
 
-        puts '-'*200
+        puts '-'*100
         puts attribute_name + '' + attr_index.to_s
-        puts '-'*200
+        puts '-'*100
 
         # find the frequency of each occurance within this attribute
         frequency_hash = @parser.read_attribute_values(attr_index)
@@ -60,7 +57,7 @@ class Entropy
       # for each of the values in the hash/array, find their
       # probability (frequency/# of events)
       ranges = split(frequency_hash)
-      return_hash[@attribute_name_index_list[attribute_name]] = ranges
+      return_hash[@parser.attribute_name_index_list[attribute_name]] = ranges
       puts "Recomended ranges for #{attribute_name} attribute are #{ranges}"
     end
 

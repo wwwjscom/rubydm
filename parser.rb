@@ -1,7 +1,7 @@
 #!/usr/local/bin/ruby -w
 
 class Parser
-	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines, :known_values, :number_of_entries
+	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines, :known_values, :number_of_entries, :attribute_name_index_list
 
 
 	def initialize ()
@@ -13,6 +13,7 @@ class Parser
 		@attributes = Array.new() # holds a list of attribute names
 		@max_lines = 1000
 		@number_of_entries = 0
+    @attribute_name_index_list = Hash.new
 
 		# delete any files laying around from a previous run
 		begin
@@ -20,6 +21,7 @@ class Parser
 			File.delete('./data/all_data')
 			File.delete('./data/descrete')
 			File.delete('./data/new_attr_list')
+      File.delete('./data/test_data')
 		rescue
 		end
 	end

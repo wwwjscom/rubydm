@@ -20,7 +20,7 @@ class Bayes
 
   # add the passed in line from xfold
   # to the given model array
-  def add_line_to_model(type, line)
+  def add_line_to_model(line)
     #puts @model
     
     line = line.chomp
@@ -52,6 +52,42 @@ class Bayes
       end
     end
   end
+
+  # add the passed in line from xfold
+  # to the given model array
+  def add_line_to_test(line)
+    #puts @model
+    
+    line = line.chomp
+    line = line.split(', ')
+
+    _class = line[line.size-1]
+    #puts line[line.size-1]
+    line.each do |_line|
+
+      @test[_class].each do |attr_name, attr_val|
+
+        if attr_name['val'].class == Hash then
+
+          # we have a sub_hash here, find the attr_name
+          # in this sub_hash and increment its value
+          attr_name['val'].each do |_attr_name, _attr_val|
+            if _attr_name == _line then
+              attr_name['val'][_line] += 1
+              break
+            end
+          end
+
+          # pretty sure we never get to this else block...
+        else
+          # we have a normal value here, increment it
+          attr_name['val'] += 1
+          puts attr_name['val']
+        end
+      end
+    end
+  end
+
 
   # Takes in a line from xfold and calculates the
   # frequencies for the given attribute and given class.
@@ -112,6 +148,45 @@ class Bayes
 
   end
 
+
+  # Recursively seeks through the attributes array
+  # for a specific class until it finds that attribute
+  # label, then returns its value
+  #
+  # Optionaly specify a sub_attribute to get an exact
+  # value back, instead of a hash contain all values for
+  # each sub_attribute of the specified attribute
+  def get_attribute_value(_class, attribute, sub_attribute = nil)
+
+    @model[_class].each do |attr_name, attr_val|
+
+      if attr_name['val'].class == Hash then
+
+        # we have a sub_hash here, find the attr_name
+        # in this sub_hash and increment its value
+        attr_name['val'].each do |_attr_name, _attr_val|
+
+          #puts "Checking to see if #{_attr_name} matches #{attribute}"
+          #puts "Checking to see if #{attr_name['name']} matches #{attribute}"
+          if attr_name['name'] == attribute then
+            if sub_attribute == nil then
+              puts "Value of #{attribute} for class #{_class} is #{attr_name['val']}"
+              return attr_name['val']
+            else
+              puts "Value of #{attribute}'s subattribute #{sub_attribute} for class #{_class} is #{attr_name['val'][sub_attribute]}"
+              return attr_name['val'][sub_attribute]
+            end
+          end
+        end
+
+        # pretty sure we never get to this else block...
+      else
+        # we have a normal value here, increment it
+        attr_name['val'] += 1
+        puts attr_name['val']
+      end
+    end
+  end
 
   # Write our new attributes list to a file.  The
   # new list now include the ranges we just calcualted
