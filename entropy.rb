@@ -118,7 +118,8 @@ class Entropy
     # base-case is done, lets drop into the recursive
     # loop
     
-    while @max_entropy == false and times < 4  do
+    # making the times value higher gives you more groups
+    while @max_entropy == false and times < 2  do
       new_stack = Array.new # temp stack
       i = 0
       stack.each do |entry|
@@ -202,6 +203,79 @@ class Entropy
       #puts probability
       #puts frequency
     end
-    return entropy
+    return entropy.to_f
   end
+
+
+  # find the gain radio for a given attribute
+  def gain_ratio(attribute_count, class_count)
+
+    info = 0
+    c1_count = 0
+    c2_count = 0
+
+    attribute_count.each do |attr_label, attr_count|
+      class_count[attr_label].each do |class_label, class_count|
+        if class_label == '<=50K.' then
+          c1_count += class_count
+        else
+          c2_count += class_count
+        end
+      end
+    end
+
+    #puts c1_count
+    #puts c2_count
+
+    # info is entropy of all c1 for an attribute +
+    # all c2 for an attribute
+    info = calc_entropy(c1_count) + calc_entropy(c2_count)
+    #puts "Info: #{info}"
+
+    # now calc info for the attribute
+    info_attr = 0
+    attribute_count.each do |attr_label, attr_count|
+      c1_count = 0
+      c2_count = 0
+      class_count[attr_label].each do |class_label, class_count|
+        if class_label == '<=50K.' then
+          c1_count += class_count.to_i
+        else
+          c2_count += class_count.to_i
+        end
+      end
+      info_attr += (attr_count.to_f / @parser.number_of_entries.to_f).to_f * (calc_entropy(c1_count.to_i) + calc_entropy(c2_count.to_i)).to_f 
+    end
+
+    #puts "Info_attr #{info_attr}"
+
+    gain = info - info_attr
+    #puts "Gain: #{gain}"
+
+    split_info = 0.0
+    attribute_count.each do |attr_label, attr_count|
+      c1_count = 0
+      c2_count = 0
+      class_count[attr_label].each do |class_label, class_count|
+        if class_label == '<=50K.' then
+          c1_count += class_count.to_i
+        else
+          c2_count += class_count.to_i
+        end
+      end
+      num = @parser.number_of_entries.to_f
+      begin
+        split_info -= (c1_count/num).to_f * Math.log((c1_count/num).to_f).to_f - (c2_count/num).to_f * Math.log(c2_count/num)
+      rescue Errno::EDOM
+      end
+      #puts "Split info: #{split_info.to_f}"
+    end
+
+    gain_ratio = gain/split_info
+    #puts "Gain Ratio: #{gain_ratio}"
+
+    return gain_ratio
+
+  end
+
 end

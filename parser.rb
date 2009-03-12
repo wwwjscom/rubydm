@@ -1,7 +1,7 @@
 #!/usr/local/bin/ruby -w
 
 class Parser
-	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines, :known_values, :number_of_entries, :attribute_name_index_list
+	attr_accessor :classes, :types, :final, :missing_values, :attributes, :max_lines, :known_values, :number_of_entries, :attribute_name_index_list, :class_count, :attr_array
 
 
 	def initialize ()
@@ -14,6 +14,7 @@ class Parser
 		@max_lines = 1000
 		@number_of_entries = 0
     @attribute_name_index_list = Hash.new
+    @attr_array = Array.new # does what the above should be doing...
 
 		# delete any files laying around from a previous run
 		begin
@@ -32,10 +33,15 @@ class Parser
 	# we case about.  It'll create a frequency of attribute values
 	# and return a hash.  Must pass in the index (column) of the
 	# desired attribute
-	def read_attribute_values(attribute_index)
+  #
+  # You can specify an alternate file to read as well
+  #
+  # You can also had classes added to the return datastructure
+	def read_attribute_values(attribute_index, file = 'all_data', include_class_label = false)
 
-		file = File.open('data/all_data', 'r')
+		file = File.open("data/#{file}", 'r')
 		@attr_frequency = Hash.new
+    @class_count = Hash.new
 
 		while line = file.gets
 			line = line.chomp
@@ -47,12 +53,76 @@ class Parser
 			else
 				@attr_frequency[line_attr_value] = 1
 			end
+
+      if include_class_label then
+        class_label = line[line.size-1]
+        if @class_count.has_key?(line_attr_value) then
+          @class_count[line_attr_value][class_label] += 1
+        else
+          @class_count[line_attr_value] = Hash['<=50K.' => 0, '>50K.' => 0]
+          @class_count[line_attr_value][class_label] = 1
+        end
+      end
+
 		end
 
 		file.close
 
 		return @attr_frequency
 	end
+
+
+	def alternate_read_attribute_values(attribute_index, file = 'all_data', include_class_label = false)
+
+		file = File.open("data/#{file}", 'r')
+		@attr_frequency = Hash.new
+    @class_count = Hash.new
+
+		while line = file.gets
+			line = line.chomp
+			line = line.split(', ')
+			line_attr_value = line[attribute_index]
+
+			if @attr_frequency.has_key?(line_attr_value)
+				@attr_frequency[line_attr_value] += 1
+			else
+				@attr_frequency[line_attr_value] = 1
+			end
+
+      if include_class_label then
+        class_label = line[line.size-1]
+        if @class_count.has_key?(line_attr_value) then
+          @class_count[line_attr_value][class_label] += 1
+        else
+          @class_count[line_attr_value] = Hash['<=50K.' => 0, '>50K.' => 0]
+          @class_count[line_attr_value][class_label] = 1
+        end
+      end
+
+		end
+
+		file.close
+
+		return @attr_frequency
+	end
+
+
+  # returns the name of an attribute based on its index
+  def get_attr_name(index)
+    return @attributes.fetch(index)['name']
+  end
+
+  # returns the attribute index based on the attribute name
+  def get_attr_index(name)
+    i = 0
+    @attributes.each do |attribute_hash|
+      if attribute_hash.value?(name) then
+        return i
+      end
+      i += 1
+    end
+  end
+
 
 	# Scans the file line by line, attribute by attribute, looking for
 	# any attributes which exist within the ranges_hash['attr_column_index'].
@@ -426,6 +496,8 @@ class Parser
 
 				attr_name = line[0]
 				attr_val = line[1]
+
+        @attr_array.push(attr_name)
 
 				if attr_val[0] == '{' then
 					# split up the list of @attributes

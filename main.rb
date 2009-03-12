@@ -4,6 +4,7 @@ require "parser.rb"
 require "entropy.rb"
 require "xfold.rb"
 require "bayes.rb"
+require "decision_tree.rb"
 
 class Runner
 
@@ -11,7 +12,7 @@ class Runner
 		@p = Parser.new
 	end
 
-	def parse_file ()
+	def parse_file (model)
 
     puts '-'*25
     puts '----------- PARSING --------------'
@@ -46,6 +47,22 @@ class Runner
 		ranges_hash = e.discretize(sorted_frequency_hash)
 		@p.replace_continous_attributes_with_categories(ranges_hash)
 
+    puts ranges_hash
+    puts '-'*100
+    puts @p.attributes
+    puts '-'*100
+
+    d = DecisionTree.new(@p, e)
+    order_list = d.order_attributes
+    #puts order_list
+    #return # DEBUG
+    d.build_tree
+    d.walk_tree("17-52, Private, 13492-382717, 11th, 1-7, Never-married, Machine-op-inspct, Own-child, Black, Male, 0-24998, 0-941, 25-49, United-States, <=50K.")
+    d.walk_tree("53-90, Self-emp-not-inc, 13492-382717, Prof-school, 8-16, Married-civ-spouse, Prof-specialty, Husband, White, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
+    d.walk_tree("17-52, State-gov, 13492-382717, Some-college, 8-16, Married-civ-spouse, Exec-managerial, Husband, Black, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
+    d.walk_tree("17-52, Private, 13492-382717, Assoc-voc, 8-16, Married-civ-spouse, Prof-specialty, Wife, White, Female, 0-24998, 0-941, 25-49, United-States, >50K.")
+
+    return # DEBUG
 
 		########################
 		# Structure bays array #
@@ -76,7 +93,8 @@ class Runner
 	end
 end
 
+
 run = Runner.new
-run.parse_file()
+run.parse_file(ARGV[0].to_s)
 
 #run.debug
