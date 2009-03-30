@@ -53,26 +53,27 @@ class Runner
     puts '-'*100
 
     d = DecisionTree.new(@p, e)
-    order_list = d.order_attributes
-    #puts order_list
-    #return # DEBUG
-    d.build_tree
-    d.walk_tree("17-52, Private, 13492-382717, 11th, 1-7, Never-married, Machine-op-inspct, Own-child, Black, Male, 0-24998, 0-941, 25-49, United-States, <=50K.")
-    d.walk_tree("53-90, Self-emp-not-inc, 13492-382717, Prof-school, 8-16, Married-civ-spouse, Prof-specialty, Husband, White, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
-    d.walk_tree("17-52, State-gov, 13492-382717, Some-college, 8-16, Married-civ-spouse, Exec-managerial, Husband, Black, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
-    d.walk_tree("17-52, Private, 13492-382717, Assoc-voc, 8-16, Married-civ-spouse, Prof-specialty, Wife, White, Female, 0-24998, 0-941, 25-49, United-States, >50K.")
+#    order_list = d.order_attributes
+#    #puts order_list
+#    #return # DEBUG
+#    d.build_tree
+#    d.walk_tree("17-52, Private, 13492-382717, 11th, 1-7, Never-married, Machine-op-inspct, Own-child, Black, Male, 0-24998, 0-941, 25-49, United-States, <=50K.")
+#    d.walk_tree("53-90, Self-emp-not-inc, 13492-382717, Prof-school, 8-16, Married-civ-spouse, Prof-specialty, Husband, White, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
+#    d.walk_tree("17-52, State-gov, 13492-382717, Some-college, 8-16, Married-civ-spouse, Exec-managerial, Husband, Black, Male, 0-24998, 0-941, 25-49, United-States, >50K.")
+#    d.walk_tree("17-52, Private, 13492-382717, Assoc-voc, 8-16, Married-civ-spouse, Prof-specialty, Wife, White, Female, 0-24998, 0-941, 25-49, United-States, >50K.")
+#
+#    return # DEBUG
 
-    return # DEBUG
-
+    # UNCOMMENT TO USE BAYES
 		########################
 		# Structure bays array #
 		########################
-    puts '-'*25
-    puts '----------- CALC PROBABILITIES --------------'
-    puts '-'*25
-		bayes = Bayes.new(@p, ranges_hash)
-		bayes.create_new_attributes_list
-		tmp = @p.structure_array_based_on_attributes(true)
+#    puts '-'*25
+#    puts '----------- CALC PROBABILITIES --------------'
+#    puts '-'*25
+#		bayes = Bayes.new(@p, ranges_hash)
+#		bayes.create_new_attributes_list
+#		tmp = @p.structure_array_based_on_attributes(true)
 
 
 		##################
@@ -82,7 +83,8 @@ class Runner
     puts '----------- X-FOLDING --------------'
     puts '-'*25
 		xfold = Xfold.new(@p)
-		xfold.xfold(bayes)
+    ### SET MODEL TO USE HERE
+		xfold.xfold('decision_tree', d)
 	end
 
 	def debug ()

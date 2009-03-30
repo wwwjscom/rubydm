@@ -39,6 +39,7 @@ class Tester
   end
 
   def evaluate(predicted_class, actual_class)
+#    puts "Evaluating...: #{predicted_class} and #{actual_class}"
 #    if predicted_class == @classes.to_a[0][0] then
       if predicted_class == actual_class then @tp += 1 end
       if predicted_class != actual_class then @fn += 1 end
@@ -51,6 +52,7 @@ class Tester
   end
 
   def accuracy
+    puts "((#{@tp.to_f} + #{@tn.to_f})/(#{@tp.to_f} + #{@tn.to_f} + #{@fp.to_f} + #{@fn.to_f}))"
     return ((@tp.to_f + @tn.to_f)/(@tp.to_f + @tn.to_f + @fp.to_f + @fn.to_f))
   end
 
