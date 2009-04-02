@@ -141,4 +141,16 @@ class Graph
       return true
     end
   end
+  
+  def input_node_indexes ()
+    return [0, input_nodes.length-1]
+  end
+  
+  def hidden_node_indexes ()
+    return [input_nodes.length, hidden_nodes.length-1]
+  end
+  
+  def output_node_indexes ()
+    return [hidden_nodes.length, output_nodes.length-1]
+  end
 end
