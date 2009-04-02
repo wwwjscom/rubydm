@@ -5,6 +5,7 @@ require "entropy.rb"
 require "xfold.rb"
 require "bayes.rb"
 require "decision_tree.rb"
+require "graph.rb"
 
 class Runner
 
@@ -51,6 +52,10 @@ class Runner
     puts '-'*100
     puts @p.attributes
     puts '-'*100
+
+    graph = Graph.new
+    graph.input_layer_list(@p.attributes, ranges_hash)
+    return
 
     d = DecisionTree.new(@p, e)
 #    order_list = d.order_attributes

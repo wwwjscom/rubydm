@@ -1,7 +1,12 @@
 #!/usr/local/bin/ruby -w
 
 class Graph
-  def initialize (input, hidden)  
+
+  def initialize  
+  end
+
+  # workaround, does what initalize should do
+  def create(input, hidden)  
     @num_hidden = hidden
     @num_input = input
     @total = input + hidden + 2
@@ -15,9 +20,9 @@ class Graph
     end 
   end
 
+
   def random_array (n)
-    return Array.new (n) 
-      { 
+    return Array.new (n) { 
         |i|         
           r = rand (6) * 0.1
           if rand (2) == 0
@@ -181,4 +186,34 @@ class Graph
   def hidden_back_connections (j)
     (0..(hidden_nodes.length-1)).to_a
   end  
+
+  # builds a hash for the input layer which contains a key
+  # representing a possible attribute value and a value which
+  # represents the index in the input layer array
+  def input_layer_list(attributes, ranges_hash)
+    input_layer_hash = Hash.new
+    i = 0
+    ranges_hash.each do |index, values|
+      #puts index
+      #puts attributes[index]['name']
+      values.split(',').each do |value|
+        input_layer_hash[value] = i
+        i += 1
+      end
+    end
+
+    attributes.each do |entry|
+      name = entry['name']
+      val = entry['val']
+      if val != 0 then
+        val.each do |_name, _val|
+          input_layer_hash[_name] = i
+          i += 1
+        end
+      end
+    end
+
+    input_layer_hash
+  end
+
 end
