@@ -104,11 +104,41 @@ class Graph
     end
   end
 
+  def layer? (j)
+    if j < input_nodes.length          
+      return "input"
+    elsif j < hidden_nodes.length 
+      return "hidden"
+    else
+      return "output"
+    end
+  end
+
   def is_in_input_layer (j)
     if j < input_nodes.length          
       return true
     else
       return false
+    end
+  end
+  
+  def is_in_hidden_layer (j)
+    if j < input_nodes.length          
+      return false
+    elsif j < hidden_nodes.length
+      return true
+    else
+      return false
+    end
+  end
+  
+  def is_in_output_layer (j)
+    if j < input_nodes.length          
+      return false
+    elsif j< hidden_nodes.length
+      return false
+    else
+      return true
     end
   end
 end
