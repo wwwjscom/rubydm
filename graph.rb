@@ -6,7 +6,7 @@ class Graph
   end
 
   # workaround, does what initalize should do
-  def create(input, hidden)  
+  def create(hidden, input = @input_layer_hash.size)  
     @num_hidden = hidden
     @num_input = input
     @total = input + hidden + 2
@@ -25,7 +25,7 @@ class Graph
     return Array.new (n) { 
         |i|         
           r = rand (6) * 0.1
-          if rand (2) == 0
+          if rand(2) == 0
             -r
           else
             r
@@ -213,7 +213,7 @@ class Graph
       end
     end
 
-    input_layer_hash
+    @input_layer_hash = input_layer_hash
   end
 
 end

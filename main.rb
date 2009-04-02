@@ -55,6 +55,7 @@ class Runner
 
     graph = Graph.new
     graph.input_layer_list(@p.attributes, ranges_hash)
+    graph.create(2)
     return
 
     d = DecisionTree.new(@p, e)
