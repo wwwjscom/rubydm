@@ -1,13 +1,11 @@
 #!/usr/local/bin/ruby -w
 
 class Graph
-  def initialize (input, hidden)
-    #@input_nodes    
-    #@arcs
-  
+  def initialize (input, hidden)  
     @num_hidden = hidden
     @num_input = input
     @total = input + hidden + 2
+    @input_nodes = Array.new (input)
     @hidden_nodes = Array.new (hidden)
     @output_nodes = Array.new (2)
 
