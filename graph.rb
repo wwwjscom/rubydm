@@ -12,9 +12,9 @@ class Graph
     @num_hidden = hidden
     @num_input = input
     @total = input + hidden + 2
-    @input_nodes = Array.new (input)
-    @hidden_nodes = Array.new (hidden)
-    @output_nodes = Array.new (2)
+    @input_nodes = Array.new (input) { Array.new(3) }
+    @hidden_nodes = Array.new (hidden) { Array.new(3) }
+    @output_nodes = Array.new (2) { Array.new(3) }
 
     arcs = Array.new (@total)
     (0..@total).each do |i|
@@ -36,15 +36,15 @@ class Graph
   end
 
   def get_input_nodes ()
-    return input_nodes
+    return @input_nodes
   end
 
   def get_hidden_nodes ()
-    return hidden_nodes
+    return @hidden_nodes
   end
 
   def get_output_nodes ()
-    return output_nodes
+    return @output_nodes
   end
 
   def get_arcs ()
@@ -59,86 +59,86 @@ class Graph
   end
 
   def get_theta (j)
-    if j < input_nodes.length          
-       return input_nodes[j][0]
-    elsif j < hidden_nodes.length
-       return hidden_nodes[j][0]
+    if j < @input_nodes.length          
+       return @input_nodes[j][0]
+    elsif j < @hidden_nodes.length
+       return @hidden_nodes[j][0]
     else
-       return output_nodes[j][0]
+       return @output_nodes[j][0]
     end 
   end   
   def set_theta (j, theta)
-    if j < input_nodes.length          
-       input_nodes[j][0] = theta
-    elsif j < hidden_nodes.length 
-       hidden_nodes[j][0] = theta
+    if j < @input_nodes.length          
+       @input_nodes[j][0] = theta
+    elsif j < @hidden_nodes.length 
+       @hidden_nodes[j][0] = theta
     else
-       output_nodes[j][0] = theta      
+       @output_nodes[j][0] = theta      
     end
   end
 
   def get_o (j)
-    if j < input_nodes.length          
-       return input_nodes[j][1]
-    elsif j < hidden_nodes.length
-       return hidden_nodes[j][1]
+    if j < @input_nodes.length          
+       return @input_nodes[j][1]
+    elsif j < @hidden_nodes.length
+       return @hidden_nodes[j][1]
     else
-       return output_nodes[j][1]
+       return @output_nodes[j][1]
     end
   end
   def set_o (j, o)
-    if j < input_nodes.length          
-       input_nodes[j][1] = o
-    elsif j < hidden_nodes.length 
-       hidden_nodes[j][1] = o
+    if j < @input_nodes.length          
+       @input_nodes[j][1] = o
+    elsif j < @hidden_nodes.length 
+       @hidden_nodes[j][1] = o
     else
-       output_nodes[j][1] = o      
+       @output_nodes[j][1] = o      
     end
   end
   
   def get_i (j)
-    if j < input_nodes.length          
-       return input_nodes[j][2]
-    elsif j < hidden_nodes.length
-       return hidden_nodes[j][2]
+    if j < @input_nodes.length          
+       return @input_nodes[j][2]
+    elsif j < @hidden_nodes.length
+       return @hidden_nodes[j][2]
     else
-       return output_nodes[j][2]
+       return @output_nodes[j][2]
     end
   end
   def set_i (j, i)
-    if j < input_nodes.length          
-       input_nodes[j][2] = i
-    elsif j < hidden_nodes.length 
-       hidden_nodes[j][2] = i
+    if j < @input_nodes.length          
+       @input_nodes[j][2] = i
+    elsif j < @hidden_nodes.length 
+       @hidden_nodes[j][2] = i
     else
-       output_nodes[j][2] = i      
+       @output_nodes[j][2] = i      
     end
   end
 
   def get_error (j)
-    if j < input_nodes.length          
-       return input_nodes[j][3]
-    elsif j < hidden_nodes.length
-       return hidden_nodes[j][3]
+    if j < @input_nodes.length          
+       return @input_nodes[j][3]
+    elsif j < @hidden_nodes.length
+       return @hidden_nodes[j][3]
     else
-       return output_nodes[j][3]
+       return @output_nodes[j][3]
     end
   end
   def set_error (j, error)
-    if j < input_nodes.length          
-       input_nodes[j][3] = error
-    elsif j < hidden_nodes.length 
-       hidden_nodes[j][3] = error
+    if j < @input_nodes.length          
+       @input_nodes[j][3] = error
+    elsif j < @hidden_nodes.length 
+       @hidden_nodes[j][3] = error
     else
-       output_nodes[j][3] = error  
+       @output_nodes[j][3] = error  
     end
   end
 
 
   def get_layer (j)
-    if j < input_nodes.length          
+    if j < @input_nodes.length          
       return :input
-    elsif j < hidden_nodes.length 
+    elsif j < @hidden_nodes.length 
       return :hidden
     else
       return :output
@@ -146,7 +146,7 @@ class Graph
   end
 
   def is_in_input_layer (j)
-    if j < input_nodes.length          
+    if j < @input_nodes.length          
       return true
     else
       return false
@@ -154,9 +154,9 @@ class Graph
   end
   
   def is_in_hidden_layer (j)
-    if j < input_nodes.length          
+    if j < @input_nodes.length          
       return false
-    elsif j < hidden_nodes.length
+    elsif j < @hidden_nodes.length
       return true
     else
       return false
@@ -164,9 +164,9 @@ class Graph
   end
   
   def is_in_output_layer (j)
-    if j < input_nodes.length          
+    if j < @input_nodes.length          
       return false
-    elsif j< hidden_nodes.length
+    elsif j< @hidden_nodes.length
       return false
     else
       return true
@@ -174,19 +174,19 @@ class Graph
   end
   
   def input_node_indexes ()
-    return [0, input_nodes.length-1]
+    return [0, @input_nodes.length-1]
   end
   
   def hidden_node_indexes ()
-    return [input_nodes.length, hidden_nodes.length-1]
+    return [@input_nodes.length, @hidden_nodes.length-1]
   end
   
   def output_node_indexes ()
-    return [hidden_nodes.length, output_nodes.length-1]
+    return [@hidden_nodes.length, @output_nodes.length-1]
   end
 
   def hidden_back_connections (j)
-    (0..(hidden_nodes.length-1)).to_a
+    (0..(@hidden_nodes.length-1)).to_a
   end  
 
   # builds a hash for the input layer which contains a key

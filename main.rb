@@ -6,6 +6,7 @@ require "xfold.rb"
 require "bayes.rb"
 require "decision_tree.rb"
 require "graph.rb"
+require "neural_network.rb"
 
 class Runner
 
@@ -54,10 +55,22 @@ class Runner
     puts '-'*100
 
     @graph = Graph.new
+    nn = NeuralNetwork.new(@graph)
     @graph.input_layer_list(@p.attributes, ranges_hash)
     @graph.create(2)
     input_layer_array = parse_line_and_active_input_layer_array('17-52, 13492-382717')
     @graph.set_i_with_array(input_layer_array)
+
+    a = @graph.hidden_node_indexes
+    (a[0]..a[1]).each do |hidden_node|
+      puts hidden_node
+      input_node_ranges = @graph.input_node_indexes
+      (input_node_indexes[0]..input_node_indexes[1]).each do |input_node|
+        i = input_node
+        j = hidden_node
+        nn.update_weight(i, j, 0.3)
+      end
+    end
     return
 
 
