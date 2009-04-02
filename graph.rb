@@ -6,9 +6,9 @@ class Graph
     #@arcs
 
     @num_hidden = n  
-    @hidden_nodes = random_array(n)      
-    @output_nodes = random_array(2)
- 
+    #@hidden_nodes = random_array(n)      
+    #@output_nodes = random_array(2)
+    #@arcs = random_array(?)
   end
 
   def random_array (n)
@@ -103,6 +103,26 @@ class Graph
        output_nodes[j][2] = i      
     end
   end
+
+  def get_error (j)
+    if j < input_nodes.length          
+       return input_nodes[j][3]
+    elsif j < hidden_nodes.length
+       return hidden_nodes[j][3]
+    else
+       return output_nodes[j][3]
+    end
+  end
+  def set_error (j, error)
+    if j < input_nodes.length          
+       input_nodes[j][3] = error
+    elsif j < hidden_nodes.length 
+       hidden_nodes[j][3] = error
+    else
+       output_nodes[j][3] = error  
+    end
+  end
+
 
   def get_layer (j)
     if j < input_nodes.length          
