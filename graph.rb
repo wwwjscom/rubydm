@@ -3,12 +3,16 @@
 class Graph
   def initialize (n)
     #@input_nodes    
-    #@output_nodes
     #@arcs
 
-    @num_hidden = n
-  
-    @hidden_nodes = Array.new (n) 
+    @num_hidden = n  
+    @hidden_nodes = random_array(n)      
+    @output_nodes = random_array(2)
+ 
+  end
+
+  def random_array (n)
+    return Array.new (n) 
       { 
         |i|         
           r = rand (6) * 0.1
