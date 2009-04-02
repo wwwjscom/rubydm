@@ -104,13 +104,13 @@ class Graph
     end
   end
 
-  def layer? (j)
+  def get_layer (j)
     if j < input_nodes.length          
-      return "input"
+      return :input
     elsif j < hidden_nodes.length 
-      return "hidden"
+      return :hidden
     else
-      return "output"
+      return :output
     end
   end
 
