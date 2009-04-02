@@ -153,4 +153,8 @@ class Graph
   def output_node_indexes ()
     return [hidden_nodes.length, output_nodes.length-1]
   end
+
+  def hidden_back_connections (j)
+    (0..(hidden_nodes.length-1)).to_a
+  end  
 end
