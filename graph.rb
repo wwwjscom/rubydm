@@ -16,9 +16,9 @@ class Graph
     @hidden_nodes = Array.new (hidden) { Array.new(3) }
     @output_nodes = Array.new (2) { Array.new(3) }
 
-    arcs = Array.new (@total)
+    @arcs = Array.new (@total)
     (0..@total).each do |i|
-      arcs[i] = random_array (@total)
+      @arcs[i] = random_array (@total)
     end 
   end
 
@@ -48,100 +48,105 @@ class Graph
   end
 
   def get_arcs ()
-    return arcs
+    return @arcs
   end
 
-  def get_weight (i, j)
-    return arcs[i][j]
+  def get_weight (i, j, layer)
+    return @arcs[i][j]
   end
-  def set_weight (i, j, w)
-    arcs[i][j] = w
+  def set_weight (i, j, w, layer)
+    @arcs[i][j] = w
   end
 
-  def get_theta (j)
-    if j < @input_nodes.length          
+  def get_theta (j, layer)
+    if layer == :input
        return @input_nodes[j][0]
-    elsif j < @hidden_nodes.length
+    elsif layer == :hidden
+       j = j - @num_input
        return @hidden_nodes[j][0]
     else
+       j = j - (@total-2)
        return @output_nodes[j][0]
     end 
   end   
-  def set_theta (j, theta)
-    if j < @input_nodes.length          
+  def set_theta (j, theta, layer)
+    if layer == :input          
        @input_nodes[j][0] = theta
-    elsif j < @hidden_nodes.length 
+    elsif layer == :hidden
+       j = j - @num_input
        @hidden_nodes[j][0] = theta
     else
+       j = j - (@total-2)
        @output_nodes[j][0] = theta      
     end
   end
 
-  def get_o (j)
-    if j < @input_nodes.length          
+  def get_o (j, layer)
+    if layer == :input
        return @input_nodes[j][1]
-    elsif j < @hidden_nodes.length
+    elsif layer == :hidden
+       j = j - @num_input
        return @hidden_nodes[j][1]
     else
+       j = j - (@total-2)
        return @output_nodes[j][1]
     end
   end
-  def set_o (j, o)
-    if j < @input_nodes.length          
+  def set_o (j, o, layer)
+    if layer == :input
        @input_nodes[j][1] = o
-    elsif j < @hidden_nodes.length 
+    elsif layer == :hidden
+       j = j - @num_input
        @hidden_nodes[j][1] = o
     else
+       j = j - (@total-2)
        @output_nodes[j][1] = o      
     end
   end
   
-  def get_i (j)
-    if j < @input_nodes.length          
+  def get_i (j, layer)
+    if layer == :input
        return @input_nodes[j][2]
-    elsif j < @hidden_nodes.length
+    elsif layer == :hidden
+       j = j - @num_input
        return @hidden_nodes[j][2]
     else
+       j = j - (@total-2)
        return @output_nodes[j][2]
     end
   end
-  def set_i (j, i)
-    if j < @input_nodes.length          
+  def set_i (j, i, layer)
+    if layer == :input
        @input_nodes[j][2] = i
-    elsif j < @hidden_nodes.length 
+    elsif layer == :hidden
+       j = j - @num_input
        @hidden_nodes[j][2] = i
     else
+       j = j - (@total-2)
        @output_nodes[j][2] = i      
     end
   end
 
-  def get_error (j)
-    if j < @input_nodes.length          
+  def get_error (j, layer)
+    if layer == :input
        return @input_nodes[j][3]
-    elsif j < @hidden_nodes.length
+    elsif layer == :hidden
+       j = j - @num_input
        return @hidden_nodes[j][3]
     else
+       j = j - (@total-2)
        return @output_nodes[j][3]
     end
   end
-  def set_error (j, error)
-    if j < @input_nodes.length          
+  def set_error (j, error, layer)
+    if layer == :input
        @input_nodes[j][3] = error
-    elsif j < @hidden_nodes.length 
+    elsif layer == :hidden
+       j = j - @num_input
        @hidden_nodes[j][3] = error
     else
+       j = j - (@total-2)
        @output_nodes[j][3] = error  
-    end
-  end
-
-
-  def get_layer (j)
-    if j < @input_nodes.length          
-      return :input
-    elsif j < @hidden_nodes.length 
-      return :hidden
-    else
-      return :output
     end
   end
 
@@ -218,10 +223,10 @@ class Graph
     @input_layer_hash = input_layer_hash
   end
 
-  def set_i_with_array(arr)
-    (0..(arr.length)).each do |i|
-      set_i(i, arr[i])
-      set_o(i, arr[i])
+  def set_i_with_array(arr, layer = nil)
+    (0..(arr.length-1)).each do |i|
+      set_i(i, arr[i], layer)
+      set_o(i, arr[i], layer)
     end
   end
 

@@ -59,7 +59,47 @@ class Runner
     @graph.input_layer_list(@p.attributes, ranges_hash)
     @graph.create(2)
     input_layer_array = parse_line_and_active_input_layer_array('17-52, 13492-382717')
-    @graph.set_i_with_array(input_layer_array)
+    @graph.set_i_with_array(input_layer_array, :input)
+
+    # Feed forward
+    a = @graph.hidden_node_indexes
+    (a[0]..a[1]).each do |hidden_node|
+      puts hidden_node
+      input_node_ranges = @graph.input_node_indexes
+      (input_node_indexes[0]..input_node_indexes[1]).each do |input_node|
+        i = input_node
+        j = hidden_node
+        nn.calc_input_to_node(j, :hidden)
+        nn.get_o(j, :hidden)
+        #nn.update_weight(i, j, 0.3)
+      end
+    end
+
+    a = @graph.output_node_indexes
+    (a[0]..a[1]).each do |output_node|
+      hidden_node_ranges = @graph.hidden_node_indexes
+      (hidden_node_indexes[0]..hidden_node_indexes[1]).each do |hidden_node|
+        i = hidden_node
+        j = output_node
+        nn.calc_input_to_node(j, :output)
+        nn.get_o(j, :output)
+        #nn.update_weight(i, j, 0.3)
+      end
+    end
+
+    # Feed backwards
+
+    a = @graph.output_node_indexes
+    (a[0]..a[1]).each do |output_node|
+      hidden_node_ranges = @graph.hidden_node_indexes
+      (hidden_node_indexes[0]..hidden_node_indexes[1]).each do |hidden_node|
+        i = hidden_node
+        j = output_node
+        nn.update_weight(i, j, 0.3, :hidden)
+        nn.calc_error(j, :output)
+        nn.update_bias(j, 0.3, :output)
+      end
+    end
 
     a = @graph.hidden_node_indexes
     (a[0]..a[1]).each do |hidden_node|
@@ -68,10 +108,19 @@ class Runner
       (input_node_indexes[0]..input_node_indexes[1]).each do |input_node|
         i = input_node
         j = hidden_node
-        nn.update_weight(i, j, 0.3)
+        nn.update_weight(i, j, 0.3, :output)
+        nn.calc_error(j, :hidden)
+        nn.update_bias(j, 0.3, :hidden)
       end
     end
-    return
+
+
+    puts @graph.get_arcs
+    puts @graph.get_output_nodes
+    puts @graph.get_input_nodes
+    puts @graph.get_hidden_nodes
+
+    return #DEBUG
 
 
 
