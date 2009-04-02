@@ -2,6 +2,8 @@
 
 class Graph
 
+  attr_accessor :input_layer_hash
+
   def initialize  
   end
 
@@ -214,6 +216,17 @@ class Graph
     end
 
     @input_layer_hash = input_layer_hash
+  end
+
+  def set_i_with_array(arr)
+    (0..(arr.length)).each do |i|
+      set_i(i, arr[i])
+      set_o(i, arr[i])
+    end
+  end
+
+  def get_index_from_hash(attribute)
+    @input_layer_hash[attribute]
   end
 
 end

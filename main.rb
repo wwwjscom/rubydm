@@ -53,11 +53,18 @@ class Runner
     puts @p.attributes
     puts '-'*100
 
-    graph = Graph.new
-    graph.input_layer_list(@p.attributes, ranges_hash)
-    graph.create(2)
+    @graph = Graph.new
+    @graph.input_layer_list(@p.attributes, ranges_hash)
+    @graph.create(2)
+    input_layer_array = parse_line_and_active_input_layer_array('17-52, 13492-382717')
+    @graph.set_i_with_array(input_layer_array)
     return
 
+
+
+    ###########################
+    # GO GO GADGET DECISION TREE
+    # #########################
     d = DecisionTree.new(@p, e)
 #    order_list = d.order_attributes
 #    #puts order_list
@@ -99,6 +106,17 @@ class Runner
 			puts '-'*50
 		end
 	end
+
+  def parse_line_and_active_input_layer_array(line)
+    input_layer_array = Array.new(@graph.input_layer_hash.size, 0)
+    line = line.split(', ')
+    line.each do |attribute|
+      index = @graph.get_index_from_hash(attribute)
+      input_layer_array[index] = 1
+    end
+
+    input_layer_array
+  end
 end
 
 
