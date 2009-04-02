@@ -1,14 +1,20 @@
 #!/usr/local/bin/ruby -w
 
 class Graph
-  def initialize (n)
+  def initialize (input, hidden)
     #@input_nodes    
     #@arcs
+  
+    @num_hidden = hidden
+    @num_input = input
+    @total = input + hidden + 2
+    @hidden_nodes = Array.new (hidden)
+    @output_nodes = Array.new (2)
 
-    @num_hidden = n  
-    #@hidden_nodes = random_array(n)      
-    #@output_nodes = random_array(2)
-    #@arcs = random_array(?)
+    arcs = Array.new (@total)
+    (0..@total).each do |i|
+      arcs[i] = random_array (@total)
+    end 
   end
 
   def random_array (n)
