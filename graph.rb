@@ -1,16 +1,14 @@
 #!/usr/local/bin/ruby -w
 
 class Graph
-  input_nodes[][]
-  hidden_nodes[][]
-  output_nodes[][]
-  arcs[][]
-
-  num_hidden = 0
-
   def initialize (n)
-    num_hidden = n
-    hidden_nodes = Array.new (n) 
+    #@input_nodes    
+    #@output_nodes
+    #@arcs
+
+    @num_hidden = n
+  
+    @hidden_nodes = Array.new (n) 
       { 
         |i|         
           r = rand (6) * 0.1
