@@ -1,5 +1,6 @@
 class DecisionTree
 
+
   def initialize(p, e)
     @p = p
     @e = e

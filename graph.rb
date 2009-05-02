@@ -1,5 +1,6 @@
 #!/usr/local/bin/ruby -w
 
+
 class Graph
 
   attr_accessor :input_layer_hash
@@ -233,5 +234,6 @@ class Graph
   def get_index_from_hash(attribute)
     @input_layer_hash[attribute]
   end
+
 
 end
