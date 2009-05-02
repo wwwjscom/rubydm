@@ -110,9 +110,9 @@ class Logic
 
   def _find_c_set(set)
     set_a = Array.new
-      puts "Set: #{set}"
+      #puts "Set: #{set}"
     set.each do |item|
-      puts "Item #{item}"
+      #puts "Item #{item}"
       #set_a << set | item.to_a
     end
 
