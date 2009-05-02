@@ -9,11 +9,11 @@ s = ARGV[1].to_f # Support
 puts c
 puts s
 
-@t = Parser.new('test_transactions.csv')
-@p = Parser.new('test_products')
+#@t = Parser.new('test_transactions.csv')
+#@p = Parser.new('test_products')
 
-#@t = Parser.new('small_basket.dat')
-#@p = Parser.new('Products')
+@t = Parser.new('small_basket.dat')
+@p = Parser.new('Products')
 
 @p.read_file
 @t.read_file
@@ -34,6 +34,7 @@ def _debug(k)
         #print "\t\t", @l.confidence(item[0..-2], last)
         #puts
       end
+      puts "#{i} has #{item} sets"
     end
 
     #puts "Itemsets @ #{i}: #{@set.size}"
