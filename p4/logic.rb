@@ -1,6 +1,6 @@
 class Logic
 
-  MIN_FREQ = 1
+  MIN_FREQ = 1200
 
   def initialize(transactions, products, freq = 4)
     @p = products
