@@ -52,11 +52,11 @@ class Logic
       end
     end
 
-    # DEBUG LOOP
-    @infreq_sets.each do |x|
-      print "[#{x}], "
-    end
-      puts
+#    # DEBUG LOOP
+#    @infreq_sets.each do |x|
+#      print "[#{x}], "
+#    end
+#      puts
 
     return new_set
   end
