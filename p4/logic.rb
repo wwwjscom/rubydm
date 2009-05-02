@@ -1,6 +1,6 @@
 class Logic
 
-  MIN_FREQ = 1000
+  MIN_FREQ = 1
 
   def initialize(transactions, products, freq = 4)
     @p = products
@@ -17,10 +17,28 @@ class Logic
     # num of transactions w/A and B
     # over
     # total number of transactions
+    #puts "A:#{a[0]}"
+    #puts "B:#{b}"
+    #puts calc_freq([a[0], b])
+    #puts @t.file.size
+    #a = a.collect{ |x| "#{x},"}
+    #a[-1] = a.last.chop
+    arr = Array.new
+    a.each do |x|
+      arr << x
+    end
+    arr << b
+    (calc_freq(arr).to_f / @t.file.size.to_f)
   end
 
   # P(B|A)
   def confidence(a, b)
+    arr = Array.new
+    a.each do |x|
+      arr << x
+    end
+    arr << b
+    (calc_freq(arr).to_f / calc_freq(a))
   end
 
   def find_c(k, set = nil)
@@ -52,11 +70,11 @@ class Logic
       end
     end
 
-#    # DEBUG LOOP
-#    @infreq_sets.each do |x|
-#      print "[#{x}], "
-#    end
-#      puts
+    # DEBUG LOOP
+    @infreq_sets.each do |x|
+      print "[#{x}], "
+    end
+      puts
 
     return new_set
   end
@@ -72,6 +90,8 @@ class Logic
       set.each do |item|
         #index = @p.file[0].index(item)
         index = @products.index(item)
+        #puts "Item:",item
+        #puts "Index:",index
         if purchase[index].to_i == 0
           match = false
           break
